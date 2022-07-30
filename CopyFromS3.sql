@@ -1,0 +1,29 @@
+
+CREATE TABLE DS_DATALAKE.PUBLIC.TBL_RATINGDETAIL(
+FECHARATING VARCHAR(50),
+PRODUCTID  VARCHAR(50),
+RATING VARCHAR(50),
+USERID  VARCHAR(50),
+KEY VARCHAR(50),
+LOCALPRODUCTID  VARCHAR(50),
+PRODUCTDESCRIPTION  VARCHAR(500),
+BRAND VARCHAR(500)
+);
+
+
+COPY INTO DS_DATALAKE.PUBLIC.TBL_RATINGDETAIL   
+FROM s3://chinaprovider 
+credentials=(aws_key_id='' aws_secret_key='')   file_format = (type = csv field_delimiter = ',');
+
+
+SELECT * FROM DS_DATALAKE.PUBLIC.TBL_RATINGDETAIL;
+
+
+CREATE TASK TASK_PRODUCTRATING
+  WAREHOUSE = COMPUTE_WH
+  SCHEDULE = 'USING CRON 0 10 * * * America/Los_Angeles'
+  TIMESTAMP_INPUT_FORMAT = 'YYYY-MM-DD HH24'
+AS
+COPY INTO DS_DATALAKE.PUBLIC.TBL_RATINGDETAIL   
+FROM s3://chinaprovider 
+credentials=(aws_key_id='' aws_secret_key='')   file_format = (type = csv field_delimiter = ',');
